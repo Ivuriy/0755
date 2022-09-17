@@ -1,0 +1,76 @@
+// ==UserScript==
+// @name         BingBot
+// @namespace    http://tampermonkey.net/
+// @version      0.1
+// @description  Bot for Bing
+// @author       Yuriy Ivashin
+// @match        https://www.bing.com/*
+// @icon         data:image/gif;base64,R0lGODlhAQABAAAAACH5BAEKAAEALAAAAAABAAEAAAICTAEAOw==
+// @grant        none
+// ==/UserScript==
+
+
+let links = document.links;
+let sb_form_go = document.getElementById("sb_form_go")[0];
+let keywords = ["купить авто", "авто с пробегом", "легковые авто"];
+let keyword = keywords[getRandom(0, keywords.length)];
+let bingInput = document.getElementsByName("q")[0];
+
+
+if (sb_form_go !== undefined) {
+ let i = 0;
+let timerId = setInterval(()=> {
+    bingInput.value += keyword[i];
+    i++;
+    if (i == keyword.length) {
+      clearInterval(timerId);
+      setTimeout(()=>{
+        sb_form_go.click();
+      }, getRandom(1000, 2500));
+
+    }
+  },500);
+  } else if (location.hostname == "auto.ru") {
+  console.log("Мы на целевом сайте!");
+
+  setInterval(()=>{
+    let index = getRandom(0, links.length);
+
+    if (getRandom(0, 101) > 70) {
+      location.href = "https://www.bing.com/";
+    }
+
+    if (links[index].href.indexOf("auto.ru") !== -1) {
+      links[index].click();
+    }
+
+  }, getRandom(4000, 5000));
+
+} else {
+  let nextBingPage = true;
+
+  for (let i=0; i<links.length; i++) {
+    if (links[i].href.indexOf("auto.ru") !== -1) {
+      console.log("Нашел строку " + links[i]);
+      let link = links[i];
+      nextBingPage = false;
+      setTimeout(()=>{
+        link.click();
+      }, getRandom(3500,4500))
+      break;
+    }
+  }
+  if (document.querySelector(".YyVfkd").innerText == "4") {
+    nextBingPage = false;
+    location.href = "https://www.bing.com/";
+  }
+  if (nextBingPage) {
+  setTimeout(()=>{
+    pnnext.click();
+  }, getRandom(3000, 5000));
+
+  }
+}
+function getRandom(min, max) {
+  return Math.floor(Math.random()*(max - min) + min);
+}
